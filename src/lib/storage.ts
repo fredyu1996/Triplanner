@@ -1,4 +1,4 @@
-import type { AppState } from '../types'
+import type { AppState, Checkpoint, Trip } from '../types'
 
 const STORAGE_KEY = 'triplanner.state.v1'
 
@@ -10,9 +10,26 @@ export function loadState(): AppState {
     if (!raw) return seedState()
     const parsed = JSON.parse(raw) as AppState
     if (!parsed || !Array.isArray(parsed.trips)) return EMPTY_STATE
-    return parsed
+    return normalize(parsed)
   } catch {
     return EMPTY_STATE
+  }
+}
+
+/** Backfill fields added in later versions so older saved data keeps working. */
+function normalize(state: AppState): AppState {
+  return {
+    ...state,
+    trips: state.trips.map((t): Trip => {
+      const checkpoints = t.checkpoints.map((c): Checkpoint => ({
+        ...c,
+        day: c.day && c.day >= 1 ? c.day : 1,
+        food: c.food ?? [],
+        activities: c.activities ?? [],
+      }))
+      const maxDay = checkpoints.reduce((m, c) => Math.max(m, c.day), 1)
+      return { ...t, days: Math.max(t.days ?? 1, maxDay), checkpoints }
+    }),
   }
 }
 
@@ -34,6 +51,7 @@ function seedState(): AppState {
         id: tripId,
         name: '京都週末遊(範例)',
         createdAt: Date.now(),
+        days: 2,
         checkpoints: [
           {
             id: 'cp-1',
@@ -43,6 +61,7 @@ function seedState(): AppState {
             lng: 135.7727,
             notes: '著名的千本鳥居,建議一早去避開人潮。',
             visited: false,
+            day: 1,
             order: 0,
             food: [],
             activities: [
@@ -57,6 +76,7 @@ function seedState(): AppState {
             lng: 135.7649,
             notes: '京都的廚房 —— 一條有蓋的美食小街。',
             visited: false,
+            day: 1,
             order: 1,
             food: [
               { id: 'f-1', name: '蛸玉子(糖漬章魚)', note: '街頭小食', ordered: false },
@@ -73,7 +93,8 @@ function seedState(): AppState {
             lng: 135.6717,
             notes: '位於城市西面、高聳入雲的竹林小徑。',
             visited: false,
-            order: 2,
+            day: 2,
+            order: 0,
             food: [],
             activities: [
               { id: 'a-2', name: '漫步竹林小徑', done: false },

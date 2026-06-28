@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Trip } from '../types'
 import type { Action } from '../lib/store'
 import { MapView } from './MapView'
 import { CheckpointDetail } from './CheckpointDetail'
+import { SearchBox } from './SearchBox'
 import { kindEmoji } from '../lib/labels'
 
 interface Props {
@@ -13,13 +14,24 @@ interface Props {
 export function TripView({ trip, dispatch }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [editingName, setEditingName] = useState(false)
+  const [activeDay, setActiveDay] = useState(1)
 
-  const ordered = [...trip.checkpoints].sort((a, b) => a.order - b.order)
-  const selected = ordered.find((c) => c.id === selectedId) ?? null
-  const visitedCount = ordered.filter((c) => c.visited).length
+  // Keep the active day within range as days are added/removed.
+  useEffect(() => {
+    if (activeDay > trip.days) setActiveDay(trip.days)
+  }, [trip.days, activeDay])
 
-  function addCheckpoint(lat: number, lng: number) {
-    dispatch({ type: 'addCheckpoint', tripId: trip.id, lat, lng })
+  const selected = trip.checkpoints.find((c) => c.id === selectedId) ?? null
+  const dayStops = trip.checkpoints.filter((c) => c.day === activeDay).sort((a, b) => a.order - b.order)
+  const visitedCount = trip.checkpoints.filter((c) => c.visited).length
+
+  function addAt(lat: number, lng: number, name?: string) {
+    dispatch({ type: 'addCheckpoint', tripId: trip.id, lat, lng, day: activeDay, name })
+  }
+
+  function addDay() {
+    dispatch({ type: 'addDay', tripId: trip.id })
+    setActiveDay(trip.days + 1)
   }
 
   return (
@@ -47,20 +59,55 @@ export function TripView({ trip, dispatch }: Props) {
           </h1>
         )}
         <span className="trip-view__progress">
-          已到 {visitedCount}/{ordered.length}
+          已到 {visitedCount}/{trip.checkpoints.length}
         </span>
       </header>
 
+      {/* Day tabs: pick the day you're planning; new stops go to this day. */}
+      <nav className="day-tabs">
+        {Array.from({ length: trip.days }, (_, i) => i + 1).map((d) => {
+          const count = trip.checkpoints.filter((c) => c.day === d).length
+          return (
+            <button
+              key={d}
+              className={`day-tab ${d === activeDay ? 'day-tab--active' : ''}`}
+              onClick={() => setActiveDay(d)}
+            >
+              第 {d} 日{count > 0 && <span className="day-tab__count">{count}</span>}
+            </button>
+          )
+        })}
+        <button className="day-tab day-tab--add" onClick={addDay} title="新增一日">
+          ＋ 加一日
+        </button>
+        {trip.days > 1 && dayStops.length === 0 && (
+          <button
+            className="day-tab day-tab--del"
+            title="刪除此空白日"
+            onClick={() => {
+              dispatch({ type: 'removeDay', tripId: trip.id, day: activeDay })
+              setActiveDay((d) => Math.max(1, d - 1))
+            }}
+          >
+            🗑 刪除此日
+          </button>
+        )}
+      </nav>
+
       <div className="trip-view__body">
         <section className="trip-view__map">
+          <div className="trip-view__search">
+            <SearchBox onPick={(r) => addAt(r.lat, r.lng, r.name)} />
+          </div>
           <MapView
-            checkpoints={ordered}
+            checkpoints={trip.checkpoints}
+            activeDay={activeDay}
             selectedId={selectedId}
-            onAdd={addCheckpoint}
+            onAdd={addAt}
             onSelect={setSelectedId}
             onMove={(id, lat, lng) => dispatch({ type: 'moveCheckpoint', tripId: trip.id, checkpointId: id, lat, lng })}
           />
-          <p className="map-hint">💡 點按地圖任何位置加入檢查點;拖動圖釘可移動位置。</p>
+          <p className="map-hint">💡 搜尋地點,或點按地圖加入「第 {activeDay} 日」的檢查點。拖動圖釘可移動。</p>
         </section>
 
         <aside className="trip-view__side">
@@ -73,12 +120,12 @@ export function TripView({ trip, dispatch }: Props) {
             />
           ) : (
             <div className="itinerary">
-              <h2>行程</h2>
-              {ordered.length === 0 ? (
-                <p className="empty">點按地圖加入第一個地點。</p>
+              <h2>第 {activeDay} 日行程</h2>
+              {dayStops.length === 0 ? (
+                <p className="empty">搜尋地點,或點按地圖加入這一日的第一個地點。</p>
               ) : (
                 <ol className="itinerary__list">
-                  {ordered.map((cp, i) => (
+                  {dayStops.map((cp, i) => (
                     <li key={cp.id} className={`itinerary__item ${cp.visited ? 'is-visited' : ''}`}>
                       <input
                         type="checkbox"
@@ -105,7 +152,7 @@ export function TripView({ trip, dispatch }: Props) {
                           ↑
                         </button>
                         <button
-                          disabled={i === ordered.length - 1}
+                          disabled={i === dayStops.length - 1}
                           onClick={() => dispatch({ type: 'reorderCheckpoint', tripId: trip.id, checkpointId: cp.id, direction: 'down' })}
                           aria-label="下移"
                         >

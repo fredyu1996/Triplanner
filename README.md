@@ -10,8 +10,13 @@ backend, no API keys.
 ## Features
 
 - **Trips** — create as many trips as you like and switch between them.
-- **Map route** — click anywhere on the map to drop a checkpoint. Checkpoints are
-  auto-connected into an ordered route line. Drag a pin to reposition it.
+- **Place search** — search any place by name (powered by OpenStreetMap
+  Nominatim, no API key) and add it straight to the itinerary.
+- **Multi-day itinerary** — organise stops into Day 1, Day 2, … Each day has its
+  own ordered route line on the map; move stops between days or add more days.
+- **Map route** — click anywhere on the map to drop a checkpoint on the active
+  day. Checkpoints are auto-connected into an ordered route line. Drag a pin to
+  reposition it.
 - **Checkpoints** — each stop is a *Place*, *Restaurant*, or *Activity*, with notes
   and a **Visited** checkbox to tick off as you travel.
 - **What to order** — give any restaurant a checklist of dishes to try, each with an

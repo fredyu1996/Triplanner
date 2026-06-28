@@ -55,6 +55,20 @@ export function CheckpointDetail({ trip, checkpoint: cp, dispatch, onClose }: Pr
         ))}
       </div>
 
+      <label className="detail__day">
+        安排在
+        <select
+          value={cp.day}
+          onChange={(e) => dispatch({ type: 'setCheckpointDay', ...base, day: Number(e.target.value) })}
+        >
+          {Array.from({ length: trip.days }, (_, i) => i + 1).map((d) => (
+            <option key={d} value={d}>
+              第 {d} 日
+            </option>
+          ))}
+        </select>
+      </label>
+
       <textarea
         className="detail__notes"
         placeholder="備註 —— 地址、營業時間、訂位、交通方式⋯⋯"

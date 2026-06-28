@@ -19,7 +19,7 @@ export interface Activity {
   done: boolean
 }
 
-/** A stop on the route. Ordered by `order`. */
+/** A stop on the route. Ordered by `order` within its `day`. */
 export interface Checkpoint {
   id: string
   name: string
@@ -30,7 +30,9 @@ export interface Checkpoint {
   notes: string
   /** Ticked off when you have reached / completed this stop. */
   visited: boolean
-  /** Position in the itinerary; lower comes first. */
+  /** Which day of the trip this stop belongs to (1-based). */
+  day: number
+  /** Position within the day; lower comes first. */
   order: number
   /** Only meaningful for restaurant checkpoints. */
   food: FoodItem[]
@@ -44,6 +46,8 @@ export interface Trip {
   /** ISO date strings, optional. */
   startDate?: string
   endDate?: string
+  /** Number of days in the itinerary (>= 1). */
+  days: number
   checkpoints: Checkpoint[]
   createdAt: number
 }
