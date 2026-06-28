@@ -14,10 +14,10 @@ export function kindEmoji(kind: CheckpointKind): string {
 export function kindLabel(kind: CheckpointKind): string {
   switch (kind) {
     case 'restaurant':
-      return 'Restaurant'
+      return '餐廳'
     case 'activity':
-      return 'Activity'
+      return '活動'
     default:
-      return 'Place'
+      return '地點'
   }
 }

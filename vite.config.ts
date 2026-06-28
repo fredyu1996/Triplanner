@@ -16,9 +16,10 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['apple-touch-icon.png', 'favicon-32.png'],
       manifest: {
-        name: 'Triplanner — Trip & Itinerary Planner',
+        name: 'Triplanner — 行程規劃',
         short_name: 'Triplanner',
-        description: 'Plan routes on a map: checkpoints, restaurant menus, and nearby activities.',
+        description: '在地圖上規劃路線:檢查點、餐廳菜式與附近活動。',
+        lang: 'zh-Hant',
         theme_color: '#0f766e',
         background_color: '#0f766e',
         display: 'standalone',

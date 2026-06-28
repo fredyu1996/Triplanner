@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import type { Checkpoint } from '../types'
-import { kindEmoji } from '../lib/labels'
+import { kindEmoji, kindLabel } from '../lib/labels'
 
 interface Props {
   checkpoints: Checkpoint[]
@@ -101,8 +101,8 @@ export function MapView({ checkpoints, selectedId, onAdd, onSelect, onMove }: Pr
               {i + 1}. {cp.name}
             </strong>
             <br />
-            {kindEmoji(cp.kind)} {cp.kind}
-            {cp.visited && ' · ✓ visited'}
+            {kindEmoji(cp.kind)} {kindLabel(cp.kind)}
+            {cp.visited && ' · ✓ 已到'}
           </Popup>
         </Marker>
       ))}

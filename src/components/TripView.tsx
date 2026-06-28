@@ -26,7 +26,7 @@ export function TripView({ trip, dispatch }: Props) {
     <div className="trip-view">
       <header className="trip-view__bar">
         <button className="back" onClick={() => dispatch({ type: 'openTrip', tripId: null })}>
-          ← Trips
+          ← 行程
         </button>
         {editingName ? (
           <input
@@ -42,12 +42,12 @@ export function TripView({ trip, dispatch }: Props) {
             }}
           />
         ) : (
-          <h1 className="trip-view__title" onClick={() => setEditingName(true)} title="Click to rename">
+          <h1 className="trip-view__title" onClick={() => setEditingName(true)} title="點按重新命名">
             {trip.name}
           </h1>
         )}
         <span className="trip-view__progress">
-          {visitedCount}/{ordered.length} visited
+          已到 {visitedCount}/{ordered.length}
         </span>
       </header>
 
@@ -60,7 +60,7 @@ export function TripView({ trip, dispatch }: Props) {
             onSelect={setSelectedId}
             onMove={(id, lat, lng) => dispatch({ type: 'moveCheckpoint', tripId: trip.id, checkpointId: id, lat, lng })}
           />
-          <p className="map-hint">💡 Click anywhere on the map to drop a checkpoint. Drag a pin to move it.</p>
+          <p className="map-hint">💡 點按地圖任何位置加入檢查點;拖動圖釘可移動位置。</p>
         </section>
 
         <aside className="trip-view__side">
@@ -73,9 +73,9 @@ export function TripView({ trip, dispatch }: Props) {
             />
           ) : (
             <div className="itinerary">
-              <h2>Itinerary</h2>
+              <h2>行程</h2>
               {ordered.length === 0 ? (
-                <p className="empty">Click the map to add your first stop.</p>
+                <p className="empty">點按地圖加入第一個地點。</p>
               ) : (
                 <ol className="itinerary__list">
                   {ordered.map((cp, i) => (
@@ -84,7 +84,7 @@ export function TripView({ trip, dispatch }: Props) {
                         type="checkbox"
                         checked={cp.visited}
                         onChange={() => dispatch({ type: 'toggleVisited', tripId: trip.id, checkpointId: cp.id })}
-                        aria-label={`Mark ${cp.name} visited`}
+                        aria-label={`標記 ${cp.name} 為已到`}
                       />
                       <button className="itinerary__open" onClick={() => setSelectedId(cp.id)}>
                         <span className="itinerary__num">{i + 1}</span>
@@ -92,22 +92,22 @@ export function TripView({ trip, dispatch }: Props) {
                           {kindEmoji(cp.kind)} {cp.name}
                         </span>
                         <span className="itinerary__sub">
-                          {cp.kind === 'restaurant' && cp.food.length > 0 && `${cp.food.length} to order`}
-                          {cp.kind === 'activity' && cp.activities.length > 0 && `${cp.activities.length} to do`}
+                          {cp.kind === 'restaurant' && cp.food.length > 0 && `${cp.food.length} 樣想點`}
+                          {cp.kind === 'activity' && cp.activities.length > 0 && `${cp.activities.length} 個活動`}
                         </span>
                       </button>
                       <span className="itinerary__reorder">
                         <button
                           disabled={i === 0}
                           onClick={() => dispatch({ type: 'reorderCheckpoint', tripId: trip.id, checkpointId: cp.id, direction: 'up' })}
-                          aria-label="Move up"
+                          aria-label="上移"
                         >
                           ↑
                         </button>
                         <button
                           disabled={i === ordered.length - 1}
                           onClick={() => dispatch({ type: 'reorderCheckpoint', tripId: trip.id, checkpointId: cp.id, direction: 'down' })}
-                          aria-label="Move down"
+                          aria-label="下移"
                         >
                           ↓
                         </button>
