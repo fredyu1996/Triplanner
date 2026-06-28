@@ -5,6 +5,7 @@ import { MapView } from './MapView'
 import { CheckpointDetail } from './CheckpointDetail'
 import { SearchBox } from './SearchBox'
 import { kindEmoji } from '../lib/labels'
+import { directionsUrl } from '../lib/googleMaps'
 
 interface Props {
   trip: Trip
@@ -120,7 +121,20 @@ export function TripView({ trip, dispatch }: Props) {
             />
           ) : (
             <div className="itinerary">
-              <h2>第 {activeDay} 日行程</h2>
+              <div className="itinerary__head">
+                <h2>第 {activeDay} 日行程</h2>
+                {dayStops.length > 0 && (
+                  <a
+                    className="gmaps-btn"
+                    href={directionsUrl(dayStops) ?? '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="在 Google Maps 導航這一日的路線"
+                  >
+                    🧭 Google Maps 導航
+                  </a>
+                )}
+              </div>
               {dayStops.length === 0 ? (
                 <p className="empty">搜尋地點,或點按地圖加入這一日的第一個地點。</p>
               ) : (

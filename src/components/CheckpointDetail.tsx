@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { Checkpoint, CheckpointKind, Trip } from '../types'
 import type { Action } from '../lib/store'
 import { kindEmoji, kindLabel } from '../lib/labels'
+import { placeUrl } from '../lib/googleMaps'
 
 interface Props {
   trip: Trip
@@ -77,9 +78,18 @@ export function CheckpointDetail({ trip, checkpoint: cp, dispatch, onClose }: Pr
         rows={3}
       />
 
-      <p className="detail__coords">
-        📍 {cp.lat.toFixed(5)}, {cp.lng.toFixed(5)}
-      </p>
+      <div className="detail__coords">
+        <span>📍 {cp.lat.toFixed(5)}, {cp.lng.toFixed(5)}</span>
+        <a
+          className="gmaps-btn"
+          href={placeUrl(cp)}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="在 Google Maps 開啟此地點"
+        >
+          🧭 在 Google Maps 開
+        </a>
+      </div>
 
       {/* Food — what to order. Most relevant for restaurants but always available. */}
       <section className="detail__section">
