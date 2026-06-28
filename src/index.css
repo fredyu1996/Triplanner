@@ -297,8 +297,15 @@ button {
   font-size: 0.95rem;
 }
 
+.search__clear {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+  padding: 4px 6px;
+}
+
 .search__results {
-  list-style: none;
   margin: 6px 0 0;
   padding: 4px;
   background: #fff;
@@ -309,7 +316,13 @@ button {
   overflow-y: auto;
 }
 
-.search__results > li > button {
+.search__results ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.search__results li > button {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -321,7 +334,7 @@ button {
   border-radius: 8px;
 }
 
-.search__results > li > button:hover {
+.search__results li > button:hover {
   background: #f1f5f9;
 }
 
@@ -337,10 +350,16 @@ button {
   white-space: nowrap;
 }
 
-.search__error {
-  padding: 8px 10px;
-  color: var(--danger);
+.search__msg {
+  margin: 0;
+  padding: 10px 10px;
   font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.search__msg--error {
+  color: var(--danger);
 }
 
 /* ---------- Day selector in detail ---------- */
